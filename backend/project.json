@@ -35,7 +35,9 @@
       }
     },
     "test": {
+      "builder": "@nrwl/jest:jest",
       "options": {
+        "jestConfig": "./jest.config.js",
         "passWithNoTests": true
       }
     }

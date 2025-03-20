@@ -41,3 +41,4 @@ jobs:
       - run: npx nx affected -t lint test build e2e
       - run: nx test
       - run: npx jest
+      - run: cd e2e; npx playwright test src/example.spec.ts

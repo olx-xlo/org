@@ -4,3 +4,18 @@
 // $color3: '#197BBD';
 // $color4: '#125E8A';
 // $color5: '#8A716A';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: #197bbd;
+  color: #262626;
+}
+.home {
+  align-items: center;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}

@@ -5,7 +5,7 @@ import {
 } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
-import { applicationConfig, moduleMetadata } from '@storybook/angular';
+import { applicationConfig } from '@storybook/angular';
 
 // Translation loader factory
 export function HttpLoaderFactory(http: HttpClient) {
@@ -23,8 +23,5 @@ export const decorators = [
       },
       TranslateService,
     ],
-  }),
-  moduleMetadata({
-    imports: [TranslateModule.forRoot()],
   }),
 ];

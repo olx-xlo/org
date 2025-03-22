@@ -3,33 +3,32 @@
 export interface ColumnData {
   symbol: string;
   name: string;
-  price: number;
-  changes: number;
-  marketCap: number;
-  lastTrade: Date;
+  price: number | null | undefined;
+  changes: number | null | undefined;
+  marketCap: number | null | undefined;
 }
 
 export interface StockData {
   symbol: string;
   name: string;
-  price: number;
-  changesPercentage: number;
-  change: number;
-  dayLow: number;
-  dayHigh: number;
-  yearHigh: number;
-  yearLow: number;
-  marketCap: number;
-  priceAvg50: number;
-  priceAvg200: number;
-  exchange: string;
-  volume: number;
-  avgVolume: number;
-  open: number;
-  previousClose: number;
-  eps: number;
-  pe: number;
-  earningsAnnouncement: Date;
-  sharesOutstanding: number;
-  timestamp: number;
+  price: number | null | undefined;
+  changesPercentage: number | null | undefined;
+  change: number | null | undefined;
+  dayLow: number | null | undefined;
+  dayHigh: number | null | undefined;
+  yearHigh: number | null | undefined;
+  yearLow: number | null | undefined;
+  marketCap: number | null | undefined;
+  priceAvg50: number | null | undefined;
+  priceAvg200: number | null | undefined;
+  exchange: string | null | undefined;
+  volume: number | null | undefined;
+  avgVolume: number | null | undefined;
+  open: number | null | undefined;
+  previousClose: number | null | undefined;
+  eps: number | null | undefined;
+  pe: number | null | undefined;
+  earningsAnnouncement: Date | null | undefined;
+  sharesOutstanding: number | null | undefined;
+  timestamp: number | null | undefined;
 }

@@ -1,4 +1,7 @@
-<table>
+@if(queriedData===null){
+<app-loader></app-loader>
+} @else if(columnData.length ){
+<table [@appear] [@tableRows]>
   <thead>
     <tr>
       <th>Symbol</th>
@@ -6,24 +9,50 @@
       <th>Price</th>
       <th>Changes</th>
       <th>Market Cap</th>
-      <th>Last Trade</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Alice</td>
-      <td>25</td>
-      <td>USA</td>
+    @for(column of columnData;track column.symbol){
+    <tr (click)="handleColumnClick(column)">
+      <td>{{ column.symbol }}</td>
+      <td>{{ column.name }}</td>
+      <td>
+        <div class="chip">
+          @if(column.price === undefined){
+          <app-matrix-effect></app-matrix-effect>
+          }@else if(column.price===null){ ??? } @else{
+          {{ column.price | number : '1.0-6' }}
+          }
+        </div>
+      </td>
+      <td class="changes">
+        <div
+          class="chip"
+          [ngClass]="{
+          'red-chip': column.changes && column.changes< 0,
+          'green-chip': column.changes && column.changes>= 0,
+        }"
+        >
+          @if(column.changes === undefined){
+          <app-matrix-effect></app-matrix-effect>
+          }@else if(column.changes===null){ ??? } @else{
+          {{ column.changes | number : '1.0-5' }}
+          }
+        </div>
+      </td>
+      <td>
+        <div class="chip">
+          @if(column.marketCap === undefined){
+          <app-matrix-effect></app-matrix-effect>
+          }@else if(column.marketCap===null){ ??? } @else{
+          {{ column.marketCap | numberSuffix : 2 }}
+          }
+        </div>
+      </td>
     </tr>
-    <tr>
-      <td>Bob</td>
-      <td>30</td>
-      <td>UK</td>
-    </tr>
-    <tr>
-      <td>Charlie</td>
-      <td>28</td>
-      <td>Canada</td>
-    </tr>
+    }
   </tbody>
 </table>
+} @else{
+<app-empty></app-empty>
+}

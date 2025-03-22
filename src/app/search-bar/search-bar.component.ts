@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,4 +17,9 @@ import { CommonModule } from '@angular/common';
 })
 export class SearchBarComponent {
   @Input() placeholder!: string;
+  @Output() searchEmitter: EventEmitter<string> = new EventEmitter();
+
+  onEnter(value: string) {
+    this.searchEmitter.emit(value);
+  }
 }

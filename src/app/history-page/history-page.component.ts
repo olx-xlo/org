@@ -16,26 +16,35 @@ import {
 import { Subject, takeUntil } from 'rxjs';
 import moment from 'moment';
 import { StockChartComponent } from '../stock-chart/stock-chart.component';
+import { LoaderComponent } from '../loader/loader.component';
 
 @Component({
   selector: 'app-history-page',
-  imports: [CommonModule, EmptyComponent, StockChartComponent],
+  imports: [CommonModule, EmptyComponent, StockChartComponent, LoaderComponent],
   templateUrl: './history-page.component.html',
   styleUrl: './history-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryPageComponent implements OnInit, OnDestroy {
   public chartOptions: object | null = null;
+  public isLoading = true;
+  public symbol: string | null = null;
+  public name: string | null = null;
+
   private readonly destroy$ = new Subject<void>();
 
-  symbol;
   constructor(
     private route: ActivatedRoute,
     private location: Location,
     private readonly stockService: StockService,
-    private readonly changeDetectorRef: ChangeDetectorRef
+    private readonly changeDetectorRef: ChangeDetectorRef,
+    private readonly router: Router
   ) {
-    this.symbol = this.route.snapshot.queryParamMap.get('symbol');
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      this.symbol = navigation.extras.state['symbol'];
+      this.name = navigation.extras.state['name'];
+    }
   }
 
   ngOnInit(): void {
@@ -49,6 +58,7 @@ export class HistoryPageComponent implements OnInit, OnDestroy {
           this.chartOptions = this._generateChartOptions(
             historicalResult.historical
           );
+          this.isLoading = false;
           this.changeDetectorRef.detectChanges();
         });
   }
@@ -91,8 +101,8 @@ export class HistoryPageComponent implements OnInit, OnDestroy {
       xaxis: {
         type: 'category',
         labels: {
-          formatter: function (val: moment.MomentInput) {
-            return moment(val).format('MMM DD HH:mm');
+          formatter: function (val: string | number | Date) {
+            return moment(new Date(val)).format('MMM DD HH:mm');
           },
         },
       },

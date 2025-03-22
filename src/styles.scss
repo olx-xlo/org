@@ -19,3 +19,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+div[role='button'],
+tr[role='button'] {
+  cursor: pointer;
+}

@@ -4,12 +4,10 @@
     placeholder="Search"
     (searchEmitter)="searchStocks($event)"
   ></app-search-bar>
-  @if(!isLoading){
+  @if(showTable){
   <app-stock-table
     [queriedData]="queriedData$ | async"
     (columnClicked)="openHistoricalView($event)"
   ></app-stock-table>
-  } @if(isLoading){
-  <app-loader></app-loader>
   }
 </div>

@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { LoaderComponent } from '../loader/loader.component';
 import { LogoComponent } from '../logo/logo.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { StockTableComponent } from '../stock-table/stock-table.component';
 import { ColumnData } from 'shared/models/column-data.model';
 import { QueryData } from 'shared/models/query-data.model';
 import { StockService } from 'src/services/stock.service';
-import { finalize, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,7 +15,6 @@ import { Router } from '@angular/router';
     CommonModule,
     StockTableComponent,
     SearchBarComponent,
-    LoaderComponent,
     LogoComponent,
     AsyncPipe,
   ],
@@ -27,7 +25,7 @@ import { Router } from '@angular/router';
 })
 export class HomePageComponent {
   isLoading = false;
-  showHeader = false;
+  showTable = false;
   queriedData$: Observable<QueryData[]> | null = null;
 
   constructor(
@@ -37,19 +35,15 @@ export class HomePageComponent {
 
   searchStocks(query: string): void {
     if (query.length === 0) return;
-
-    this.showHeader = true;
-    this.queriedData$ = this.stockService
-      .queryStocks(query)
-      .pipe(
-        map((result) => (result.length > 10 ? result.slice(0, 10) : result))
-      );
+    this.showTable = true;
+    this.queriedData$ = this.stockService.queryStocks(query);
   }
 
   openHistoricalView(column: ColumnData): void {
     this.router.navigate(['history'], {
-      queryParams: {
+      state: {
         symbol: column.symbol,
+        name: column.name,
       },
     });
   }

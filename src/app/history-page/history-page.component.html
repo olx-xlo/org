@@ -1,10 +1,10 @@
 <div class="home">
-  <div class="back" (click)="navigateBack()">🔙</div>
+  <div class="back" role="button" (click)="navigateBack()">🔙</div>
   <h1>{{ symbol }} History</h1>
   <h2>{{ symbol }}</h2>
   @if(this.symbol===null){
   <app-empty></app-empty>
   } @if(chartOptions !==null){
   <app-stock-chart [chartOptions]="chartOptions"></app-stock-chart>
-  }
+  } @if(isLoading){ <app-loader></app-loader> }
 </div>

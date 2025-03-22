@@ -1,0 +1,35 @@
+.search_input {
+  max-width: 50%;
+  width: 50%;
+  padding: 12px 24px;
+
+  background-color: transparent;
+  transition: transform 250ms ease-in-out;
+  font-size: 14px;
+  line-height: 18px;
+
+  color: #8a716a;
+  background-color: transparent;
+
+  border-radius: 50px;
+  border: 1px solid #8a716a;
+  transition: all 250ms ease-in-out;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+  &::placeholder {
+    color: rgba(138, 113, 106, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  &:hover,
+  &:focus {
+    padding: 12px 0;
+    outline: 0;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #8a716a;
+    border-radius: 0;
+    background-position: 100% center;
+  }
+}

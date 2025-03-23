@@ -6,6 +6,7 @@ import {
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { applicationConfig } from '@storybook/angular';
+import { provideToastr } from 'ngx-toastr';
 
 // Translation loader factory
 export function HttpLoaderFactory(http: HttpClient) {
@@ -22,6 +23,7 @@ export const decorators = [
         deps: [HttpClient],
       },
       TranslateService,
+      provideToastr(),
     ],
   }),
 ];

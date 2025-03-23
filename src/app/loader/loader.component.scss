@@ -1,49 +1,70 @@
-.lds-ripple {
-  box-sizing: border-box;
+.loader {
+  margin-top: 10px;
+  width: 60px;
+  height: 50px;
+  text-align: center;
+  font-size: 10px;
 
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 50px;
-  div {
-    position: absolute;
-    border: 4px solid currentColor;
-    opacity: 1;
-    border-radius: 50%;
-    animation: lds-ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  > div {
+    height: 100%;
+    width: 8px;
+    display: inline-block;
+    float: left;
+    margin-left: 2px;
+    -webkit-animation: delay 0.8s infinite ease-in-out;
+    animation: delay 0.8s infinite ease-in-out;
   }
-  div:nth-child(2) {
-    animation-delay: -1.5s;
+
+  .bar1 {
+    background-color: #754fa0;
+  }
+  .bar2 {
+    background-color: #09b7bf;
+    -webkit-animation-delay: -0.7s;
+    animation-delay: -0.7s;
+  }
+  .bar3 {
+    background-color: #90d36b;
+    -webkit-animation-delay: -0.6s;
+    animation-delay: -0.6s;
+  }
+  .bar4 {
+    background-color: #f2d40d;
+    -webkit-animation-delay: -0.5s;
+    animation-delay: -0.5s;
+  }
+  .bar5 {
+    background-color: #fcb12b;
+    -webkit-animation-delay: -0.4s;
+    animation-delay: -0.4s;
+  }
+  .bar6 {
+    background-color: #ed1b72;
+    -webkit-animation-delay: -0.3s;
+    animation-delay: -0.3s;
   }
 }
-@keyframes lds-ripple {
-  0% {
-    top: 36px;
-    left: 36px;
-    width: 8px;
-    height: 8px;
-    opacity: 0;
-  }
-  4.9% {
-    top: 36px;
-    left: 36px;
-    width: 8px;
-    height: 8px;
-    opacity: 0;
-  }
-  5% {
-    top: 36px;
-    left: 36px;
-    width: 8px;
-    height: 8px;
-    opacity: 1;
-  }
+
+@-webkit-keyframes delay {
+  0%,
+  40%,
   100% {
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 80px;
-    opacity: 0;
+    -webkit-transform: scaleY(0.05);
+  }
+  20% {
+    -webkit-transform: scaleY(1);
+  }
+}
+
+@keyframes delay {
+  0%,
+  40%,
+  100% {
+    transform: scaleY(0.05);
+    -webkit-transform: scaleY(0.05);
+  }
+  20% {
+    transform: scaleY(1);
+    -webkit-transform: scaleY(1);
   }
 }

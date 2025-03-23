@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ColumnData, StockData } from 'shared/models/column-data.model';
 import { QueryData } from 'shared/models/query-data.model';
 import { HistoricalResult } from 'shared/models/historical-data.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,10 @@ export class StockService {
   //nestjs url
   private readonly backendUrl = 'api';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly toastr: ToastrService
+  ) {}
 
   getHistoricalData(
     symbol: string,
@@ -34,17 +38,27 @@ export class StockService {
     return this.http.get<StockData>(`${this.backendUrl}/quote/${symbol}`);
   }
 
-  getLastTradeDate(symbol: string): Observable<number> {
-    return this.http.get<number>(
-      `${this.backendUrl}/last-trade-date/${symbol}`
-    );
-  }
-
   queryStocks(query: string): Observable<QueryData[]> {
     return this.http.get<QueryData[]>(`${this.backendUrl}/query/${query}`);
   }
 
-  transformStockDataToColumnData(stockData: StockData): ColumnData {
+  displayErrorToast(message: string): void {
+    this.toastr.error(message);
+  }
+
+  transformStockDataToColumnData(
+    stockData: StockData,
+    symbol: string
+  ): ColumnData {
+    if (stockData === null) {
+      return {
+        symbol,
+        name: '🤔',
+        price: null,
+        changes: null,
+        marketCap: null,
+      };
+    }
     return {
       symbol: stockData.symbol,
       name: stockData.name,
@@ -53,6 +67,7 @@ export class StockService {
       marketCap: stockData.marketCap,
     };
   }
+
   private _formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }

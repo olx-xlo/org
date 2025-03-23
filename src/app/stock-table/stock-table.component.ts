@@ -9,6 +9,7 @@ import {
   Output,
   SimpleChanges,
   OnDestroy,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,30 +18,21 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { query, stagger } from '@angular/animations';
 import { ColumnData } from 'shared/models/column-data.model';
 import { StockService } from 'src/services/stock.service';
-import { NumberSuffixPipe } from 'src/pipes/number-suffix.pipe';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatrixEffectComponent } from '../matrix-effect/matrix-effect.component';
 import { EmptyComponent } from '../empty/empty.component';
 import { LoaderComponent } from '../loader/loader.component';
-import {
-  combineLatest,
-  forkJoin,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { catchError, EMPTY, forkJoin, map, Observable, Subject } from 'rxjs';
+import { NumberSuffixPipe } from 'src/pipes/number-suffix.pipe';
 
 @Component({
   selector: 'app-stock-table',
   imports: [
     CommonModule,
     TranslateModule,
-    NumberSuffixPipe,
     MatChipsModule,
-    MatrixEffectComponent,
     EmptyComponent,
     LoaderComponent,
+    NumberSuffixPipe,
   ],
   templateUrl: './stock-table.component.html',
   styleUrl: './stock-table.component.scss',
@@ -72,6 +64,12 @@ export class StockTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output() columnClicked: EventEmitter<ColumnData> = new EventEmitter();
 
   columnData: ColumnData[] = [];
+  paginatedColumnData: ColumnData[] = [];
+  pageSize = 10;
+  currentPageIndex = 0;
+  isLoadingPage = false;
+
+  columnMap: Map<string, ColumnData> = new Map();
 
   private readonly destroy$ = new Subject<void>();
 
@@ -81,7 +79,7 @@ export class StockTableComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this._initColumnData();
+    this._resetAndLoad();
   }
 
   ngOnDestroy(): void {
@@ -91,38 +89,83 @@ export class StockTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['queriedData']) {
-      this._initColumnData();
+      this._resetAndLoad();
     }
+  }
+
+  private _resetAndLoad(): void {
+    this.columnMap.clear();
+    this.columnData = [];
+    this.currentPageIndex = 0;
+    this._loadMoreData();
   }
 
   public handleColumnClick(column: ColumnData) {
     this.columnClicked.emit(column);
   }
 
-  private _initColumnData() {
-    if (!this.queriedData) return;
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight
+    ) {
+      this._loadMoreData();
+    }
+  }
 
-    this.columnData = this.queriedData.map((dataPoint) => ({
-      symbol: dataPoint.symbol,
-      name: dataPoint.name,
-      price: undefined,
-      changes: undefined,
-      marketCap: undefined,
-    }));
+  private _loadMoreData(): void {
+    if (
+      !this.queriedData ||
+      this.isLoadingPage ||
+      this.columnData.length >= this.queriedData.length
+    )
+      return;
+    this.isLoadingPage = true;
 
-    const stockDataObservables: Observable<ColumnData>[] = this.columnData.map(
-      (column) =>
-        this.stockService
-          .getStockData(column.symbol)
-          .pipe(
-            map((stockData) =>
-              this.stockService.transformStockDataToColumnData(stockData)
-            )
-          )
+    const newData = this.queriedData.slice(
+      this.currentPageIndex * this.pageSize,
+      (this.currentPageIndex + 1) * this.pageSize
     );
 
-    combineLatest(stockDataObservables).subscribe((updatedColumns) => {
-      this.columnData = updatedColumns;
+    //Set the columnMap item, so they can be seen by the user, while still data is being fetched
+    newData.forEach((dataPoint) => {
+      this.columnMap.set(dataPoint.symbol, {
+        symbol: dataPoint.symbol,
+        name: dataPoint.name,
+        price: undefined,
+        changes: undefined,
+        marketCap: undefined,
+      });
+    });
+
+    this.changeDetectorRef.markForCheck();
+
+    // Create observables for each new item to fetch stock data
+    const stockDataObservables: Observable<ColumnData>[] = newData.map(
+      (column) =>
+        this.stockService.getStockData(column.symbol).pipe(
+          map((stockData) =>
+            this.stockService.transformStockDataToColumnData(
+              stockData,
+              column.symbol
+            )
+          ),
+          catchError((error) => {
+            this.stockService.displayErrorToast(
+              `No data for ${column.symbol} today... 🚫📅📊🤷‍♂️`
+            );
+            console.error(error);
+            return EMPTY;
+          })
+        )
+    );
+
+    forkJoin(stockDataObservables).subscribe((results: ColumnData[]) => {
+      results.forEach((column) => this.columnMap.set(column.symbol, column));
+      this.columnData = [...this.columnMap.values()];
+      this.isLoadingPage = false;
+      this.currentPageIndex++;
       this.changeDetectorRef.markForCheck();
     });
   }

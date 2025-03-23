@@ -66,6 +66,18 @@ td {
   color: #fc5130;
   background-color: #f8b3a0;
 }
-h5 {
+.center {
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+h5 {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  transform: translateX(calc(50vw - 50%));
+}
+.name {
+  max-width: 200px;
 }

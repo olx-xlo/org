@@ -1,6 +1,13 @@
-@if(queriedData===null){
+@if(queriedData){
+<h5 [@appear]>
+  {{ queriedData.length }} hits @if(queriedData.length>200){
+  <span>...scroll awaaaayyy</span>
+  }
+</h5>
+} @if(queriedData===null){
 <app-loader></app-loader>
-} @else if(columnData.length ){
+
+}@else if( columnData.length ){
 <table [@appear] [@tableRows]>
   <thead>
     <tr>
@@ -13,14 +20,12 @@
   </thead>
   <tbody>
     @for(column of columnData;track column.symbol){
-    <tr (click)="handleColumnClick(column)">
+    <tr (click)="handleColumnClick(column)" role="button">
       <td>{{ column.symbol }}</td>
-      <td>{{ column.name }}</td>
+      <td class="name">{{ column.name }}</td>
       <td>
         <div class="chip">
-          @if(column.price === undefined){
-          <app-matrix-effect></app-matrix-effect>
-          }@else if(column.price===null){ ??? } @else{
+          @if(column.price===null){ 🤔 } @else{
           {{ column.price | number : '1.0-6' }}
           }
         </div>
@@ -33,18 +38,14 @@
           'green-chip': column.changes && column.changes>= 0,
         }"
         >
-          @if(column.changes === undefined){
-          <app-matrix-effect></app-matrix-effect>
-          }@else if(column.changes===null){ ??? } @else{
+          @if(column.changes===null){ 🤔 } @else{
           {{ column.changes | number : '1.0-5' }}
           }
         </div>
       </td>
       <td>
         <div class="chip">
-          @if(column.marketCap === undefined){
-          <app-matrix-effect></app-matrix-effect>
-          }@else if(column.marketCap===null){ ??? } @else{
+          @if(column.marketCap===null){ 🤔 } @else{
           {{ column.marketCap | numberSuffix : 2 }}
           }
         </div>
@@ -53,6 +54,12 @@
     }
   </tbody>
 </table>
-} @else{
+} @else if(!isLoadingPage){
 <app-empty></app-empty>
+} @if(isLoadingPage && queriedData!==null){
+<div class="center">
+  <div>
+    <app-loader></app-loader>
+  </div>
+</div>
 }
